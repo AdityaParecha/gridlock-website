@@ -20,6 +20,7 @@ _centroids_df = None
 
 # In model_utils.py, inside load_resources():
 def load_resources():
+    ensure_model_exists()
     global _model, _history_df, _centroids_df
     if _model is None:
         _model = joblib.load(MODEL_PATH)
@@ -97,3 +98,33 @@ def get_actual_for_slot(target_time):
     actual_slice = history_df[history_df['created_datetime'] == target_time]
     merged = actual_slice.merge(centroids_df, on='zone_dbscan', how='left')
     return merged.sort_values('violation_count', ascending=False)
+
+#downloading model
+import os
+import gdown
+
+MODEL_FILE_ID = "1_XmkJ-D3QxwjXkHrZ3AfpSwOnCJOaO0a"
+
+
+def ensure_model_exists():
+    """
+    Downloads the trained model from Google Drive
+    if it is not already present locally.
+    """
+
+    if MODEL_PATH.exists():
+        return
+
+    print("Model not found. Downloading from Google Drive...")
+
+    MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
+
+    url = f"https://drive.google.com/uc?id={MODEL_FILE_ID}"
+
+    gdown.download(
+        url,
+        str(MODEL_PATH),
+        quiet=False
+    )
+
+    print("Model downloaded successfully.")
