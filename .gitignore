@@ -1,0 +1,4 @@
+﻿models/knn_zone_dbscan2.pkl
+__pycache__/
+*.pyc
+demo_data/

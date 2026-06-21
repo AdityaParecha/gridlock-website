@@ -1,0 +1,8 @@
+﻿flask
+pandas
+numpy
+scikit-learn
+folium
+river
+joblib
+gunicorn

@@ -1,0 +1,46 @@
+<!-- templates/compare.html -->
+{% extends "base.html" %}
+{% block content %}
+<h2>Compare Predicted vs Actual Hotspots</h2>
+<p>Enter a date/time slot from your <strong>test period</strong> (the data the model never saw during training) to see how well the predicted hotspot map matches what actually happened.</p>
+
+<form method="POST">
+    <label>Date:
+    <input type="date" name="date" min="{{ min_date }}" max="{{ max_date }}" required>
+</label><br>
+
+    <label>Time Slot Start:
+    <select name="time_slot" required>
+        {% for h in range(0, 24) %}
+            {% for m in [0, 30] %}
+                <option value="{{ '%02d:%02d'|format(h, m) }}">{{ '%02d:%02d'|format(h, m) }}</option>
+            {% endfor %}
+        {% endfor %}
+    </select>
+</label>
+<br>
+    <button type="submit">Compare</button>
+</form>
+
+{% if error %}
+<p style="color:red; font-weight:bold;">{{ error }}</p>
+{% endif %}
+
+{% if pred_map_html and actual_map_html %}
+<div style="display: flex; gap: 16px; margin-top: 24px; flex-wrap: wrap;">
+    <div style="flex: 1; min-width: 400px;">
+        <h3 style="text-align:center; color:#1f77b4;">Predicted</h3>
+        <iframe srcdoc="{{ pred_map_html | e }}"></iframe>
+    </div>
+    <div style="flex: 1; min-width: 400px;">
+        <h3 style="text-align:center; color:#d62728;">Actual</h3>
+        <iframe srcdoc="{{ actual_map_html | e }}"></iframe>
+    </div>
+</div>
+
+<p style="margin-top: 16px; font-size: 0.9em; color: #555;">
+    Note: Red pins mark the top 5 hotspot zones on each map — compare their positions and ranking
+    between the two maps to judge prediction quality for this specific slot.
+</p>
+{% endif %}
+{% endblock %}

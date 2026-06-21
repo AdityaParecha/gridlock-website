@@ -1,0 +1,77 @@
+<!-- templates/demo.html -->
+{% extends "base.html" %}
+{% block content %}
+<div style="background:#fff3cd; border:1px solid #ffeeba; padding:12px; margin-bottom:16px;">
+  <strong>⚠️ DEMO PAGE — NOT CONNECTED TO THE LIVE PRODUCTION MODEL.</strong><br>
+  Submissions here only update an isolated sandbox model used for demonstration purposes.
+  Real police predictions on Page 1 are unaffected by anything entered here.
+</div>
+
+<h2>Submit a Sample Violation Record (Demo)</h2>
+<p>Click on the map to mark a location, or use your current location below.</p>
+
+<button type="button" id="useLocationBtn">📍 Use My Current Location</button>
+<div id="demoMap" style="height: 400px; width: 100%; margin: 12px 0; border-radius: 6px;"></div>
+<p id="coordDisplay" style="font-weight: bold;">No location selected yet.</p>
+
+<form method="POST" id="demoForm">
+    <input type="hidden" name="latitude" id="latInput" required>
+    <input type="hidden" name="longitude" id="lonInput" required>
+
+    <label>Date: <input type="date" name="date" required></label><br>
+    <label>Time Slot:
+        <select name="time_slot" required>
+            {% for h in range(0, 24) %}
+                {% for m in [0, 30] %}
+                    <option value="{{ '%02d:%02d'|format(h, m) }}">{{ '%02d:%02d'|format(h, m) }}</option>
+                {% endfor %}
+            {% endfor %}
+        </select>
+    </label><br>
+    <button type="submit" id="submitBtn" disabled>Submit & Update Demo Model</button>
+</form>
+
+{% if message %}<p>{{ message }}</p>{% endif %}
+<p>Demo records collected so far: {{ stats.n_records }} (milestone every {{ threshold }} records)</p>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    const map = L.map('demoMap').setView([12.9716, 77.5946], 12); // Bengaluru default center
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    let marker = null;
+
+    function setLocation(lat, lon) {
+        if (marker) { map.removeLayer(marker); }
+        marker = L.marker([lat, lon]).addTo(map);
+        map.setView([lat, lon], 14);
+        document.getElementById('latInput').value = lat;
+        document.getElementById('lonInput').value = lon;
+        document.getElementById('coordDisplay').innerText =
+            `Selected location: ${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+        document.getElementById('submitBtn').disabled = false;
+    }
+
+    map.on('click', function(e) {
+        setLocation(e.latlng.lat, e.latlng.lng);
+    });
+
+    document.getElementById('useLocationBtn').addEventListener('click', function() {
+        if (!navigator.geolocation) {
+            alert("Geolocation is not supported by your browser.");
+            return;
+        }
+        navigator.geolocation.getCurrentPosition(
+            function(pos) {
+                setLocation(pos.coords.latitude, pos.coords.longitude);
+            },
+            function(err) {
+                alert("Could not get your location: " + err.message);
+            }
+        );
+    });
+</script>
+{% endblock %}

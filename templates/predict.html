@@ -1,0 +1,39 @@
+<!-- templates/predict.html -->
+{% extends "base.html" %}
+{% block content %}
+<h2>Predict Upcoming Violation Hotspots</h2>
+<form method="POST">
+    <label>Date: <input type="date" name="date" required></label>
+    <label>Time Slot Start:
+    <select name="time_slot" required>
+        {% for h in range(0, 24) %}
+            {% for m in [0, 30] %}
+                <option value="{{ '%02d:%02d'|format(h, m) }}">{{ '%02d:%02d'|format(h, m) }}</option>
+            {% endfor %}
+        {% endfor %}
+    </select>
+</label>
+
+    <button type="submit">Predict Hotspots</button>
+</form>
+
+{% if error %}<p style="color:red;">{{ error }}</p>{% endif %}
+
+{% if map_html %}
+<h3>Predicted Hotspot Heatmap</h3>
+<iframe srcdoc="{{ map_html | e }}"></iframe>
+<h3>Top 10 Predicted Zones</h3>
+<table border="1" cellpadding="6">
+<tr><th>Rank</th><th>Zone ID</th><th>Predicted Count</th><th>Lat</th><th>Lon</th></tr>
+{% for row in table_data %}
+<tr>
+  <td>{{ loop.index }}</td>
+  <td>{{ row.zone_dbscan }}</td>
+  <td>{{ "%.2f"|format(row.predicted_count) }}</td>
+  <td>{{ "%.5f"|format(row.latitude) }}</td>
+  <td>{{ "%.5f"|format(row.longitude) }}</td>
+</tr>
+{% endfor %}
+</table>
+{% endif %}
+{% endblock %}
