@@ -4,7 +4,7 @@ import joblib
 from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent
 
-MODEL_PATH = BASE_DIR / "models" / "knn_zone_dbscan2.pkl"
+MODEL_PATH = BASE_DIR / "models" / "knn_zone_dbscan3.pkl"
 ZONED_DATA_PATH = BASE_DIR / "data" / "zoned_data.csv"
 CENTROIDS_PATH = BASE_DIR / "zone_centroids.csv"
 
@@ -103,7 +103,7 @@ def get_actual_for_slot(target_time):
 import os
 import gdown
 
-MODEL_FILE_ID = "1_XmkJ-D3QxwjXkHrZ3AfpSwOnCJOaO0a"
+MODEL_FILE_ID = "1U7m4xzYA_Z2nTDot6Hv-wIlngvwjDpQz"
 
 
 def ensure_model_exists():
